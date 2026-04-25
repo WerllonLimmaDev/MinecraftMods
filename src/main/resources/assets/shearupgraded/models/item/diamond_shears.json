@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "shearupgraded:item/golden_shears"
+    "layer0": "shearupgraded:item/diamond_shears"
   }
 }

@@ -1,6 +1,9 @@
 {
-  "item.shearupgraded.golden_shears": "Golden Shears",
   "item.shearupgraded.iron_shears": "Iron Shears",
+  "item.shearupgraded.golden_shears": "Golden Shears",
+  "item.shearupgraded.emerald_shears": "Emerald Shears",
+  "item.shearupgraded.diamond_shears": "Diamond Shears",
+  "item.shearupgraded.netherite_shears": "Netherite Shears",
   "tooltip.shearupgraded.vein_mining_range": "Vein Mining: %s blocks",
   "tooltip.shearupgraded.hold_shift": "Hold Shift for more details",
   "tooltip.shearupgraded.vein_mining_activation": "Use Shift + Left Click to activate Vein Mining"

@@ -1,27 +1,26 @@
-package com.example.examplemod.item;
+package dev.werllon.shearupgraded.item;
 
-import com.example.examplemod.util.VeinMiningHelper;
+import dev.werllon.shearupgraded.util.VeinMiningHelper;
+import java.util.List;
+import java.util.Set;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShearsItem;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Set;
 
 public class BaseVeinShearsItem extends ShearsItem {
     private static final String VEIN_MINING_TAG = "shearupgraded_vein_mining";
+
     private final int veinLimit;
 
     public BaseVeinShearsItem(int durability, int veinLimit) {
@@ -34,7 +33,7 @@ public class BaseVeinShearsItem extends ShearsItem {
     }
 
     protected boolean isVeinMiningActive(Player player) {
-        return player != null && player.isShiftKeyDown();
+        return player.isShiftKeyDown();
     }
 
     @Override
@@ -57,14 +56,17 @@ public class BaseVeinShearsItem extends ShearsItem {
     public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity entity) {
         boolean result = super.mineBlock(stack, level, state, pos, entity);
 
-        if (level.isClientSide) return result;
-        if (!(entity instanceof ServerPlayer player)) return result;
-        if (!isVeinMiningActive(player)) return result;
-        if (stack.getOrCreateTag().getBoolean(VEIN_MINING_TAG)) return result;
-        if (!VeinMiningHelper.canVeinMine(state)) return result;
+        if (level.isClientSide || !(entity instanceof ServerPlayer player)) {
+            return result;
+        }
+        if (!isVeinMiningActive(player)) {
+            return result;
+        }
+        if (stack.getOrCreateTag().getBoolean(VEIN_MINING_TAG) || !VeinMiningHelper.canVeinMine(state)) {
+            return result;
+        }
 
         Set<BlockPos> targets = VeinMiningHelper.findConnectedBlocks(level, pos, state, Math.max(veinLimit - 1, 0));
-
         stack.getOrCreateTag().putBoolean(VEIN_MINING_TAG, true);
         try {
             for (BlockPos target : targets) {

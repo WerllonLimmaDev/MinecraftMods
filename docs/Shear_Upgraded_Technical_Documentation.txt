@@ -1,0 +1,306 @@
+     DOCUMENTAÇÃO TÉCNICA E DE
+             PROJETO
+                     Shear Upgraded
+                      Minecraft Java Mod - Forge 1.20.1
+
+
+
+
+Documento consolidado com escopo do mod, funcionalidades já implementadas, decisões
+     técnicas, erros já corrigidos, estado atual do projeto e plano de fechamento.
+
+
+
+                         Data de consolidação: 25/04/2026
+
+                          Autor do projeto: Werllon Limma
+
+                 Repositório GitHub: WerllonLimmaDev/MinecraftMods
+1. Visão geral do mod
+Shear Upgraded é um mod para Minecraft Java criado para expandir o uso da tesoura além da
+experiência vanilla. A proposta central do projeto é introduzir uma linha de tesouras por tier, com maior
+durabilidade e um sistema de Vein Mining específico para tudo aquilo que faz sentido ser tratado como
+uso legítimo de shears.
+
+Na prática, o mod foi pensado para acelerar tarefas repetitivas como remoção de folhas, colheita de lã,
+corte de teias, limpeza de vines, glow lichen, gramíneas, samambaias, hanging roots e tripwire,
+mantendo o uso controlado por tier.
+
+Outro diferencial já implementado é o feedback visual antes da ação: ao segurar Shift com uma das
+shears customizadas, o jogo destaca com borda branca fina os blocos que serão alcançados pelo Vein
+Mining, permitindo prever o resultado antes do clique.
+
+
+
+2. Objetivo do projeto e utilidade prática
+     Criar progressão real para shears, algo que a experiência vanilla praticamente não oferece.
+     Adicionar tiers com identidade própria de uso e alcance.
+     Reduzir o tempo gasto em limpeza de vegetação e materiais tratados por tesoura.
+     Tornar a ação previsível por meio de preview visual em tempo real.
+     Preparar base técnica reutilizável para expansão futura para entidades válidas de shears.
+
+Em termos de utilidade, o mod é especialmente relevante para jogadores focados em construção,
+paisagismo, farm de lã, manutenção de áreas arborizadas, limpeza de decoração natural e otimização
+de tarefas que antes exigiam múltiplos cliques.
+
+
+
+3. Stack técnica e base do ambiente
+     Minecraft Java: 1.20.1
+     Loader: Forge
+     Versão do Forge em uso no projeto: 47.4.10
+     IDE principal utilizada: IntelliJ IDEA
+     Sistema operacional usado no desenvolvimento: Windows 11
+     Java do projeto: JDK 17
+     Gradle configurado e funcionando com Java 17
+     Repositório remoto configurado e push concluído no GitHub
+
+O ambiente chegou a apresentar conflitos entre Java 8, Java 21 e Gradle, mas esses pontos foram
+diagnosticados e corrigidos. Atualmente o projeto roda, compila e abre o cliente de desenvolvimento
+normalmente com runClient.
+
+
+
+4. Escopo funcional do mod
+A linha de tesouras planejada para o mod ficou definida da seguinte forma:
+
+                                                                        Escopo
+    Tier            Durabilidade      Vein Mining      Ativação                           Estado atual
+                                                                        pretendido
+                                      8 blocos por     Shift + clique   Blocos válidos    Concluída e
+    Iron            297
+                                      vez              esquerdo         de shears         validada
+                                      16 blocos por Shift + clique   Blocos válidos Concluída e
+    Gold            357
+                                      vez           esquerdo         de shears        validada
+                                      32 blocos e                    Blocos e
+                                                    Shift + clique                    Parcial / em
+  Emerald           714               entities por                   entidades
+                                                    esquerdo                          aberto
+                                      vez                            válidas
+                                      64 blocos e                    Blocos e
+                    A definir no                    Shift + clique
+  Diamond                             entities por                   entidades        Planejada
+                    código final                    esquerdo
+                                      vez                            válidas
+                                      128 blocos e                   Blocos e
+                    A definir no                    Shift + clique
+  Netherite                           entities por                   entidades        Planejada
+                    código final                    esquerdo
+                                      vez                            válidas
+Observação importante: embora as classes preliminares para Emerald, Diamond e Netherite já
+apareçam no repositório, apenas Iron e Gold foram validadas ponta a ponta nesta fase do projeto. A
+lógica para entities ainda não foi implementada.
+
+
+
+5. Funcionalidades já implementadas
+5.1. Iron Shears
+     Classe própria criada: IronShearsItem.java
+     Registro no mod concluído com sucesso
+     Recipe criada e validada
+     Textura criada e ligada ao item
+     Model JSON criado e funcionando
+     Nome no arquivo de idioma funcionando
+     Exibição na aba Tools & Utilities validada
+     Tooltip dinâmica funcionando
+     Vein Mining de blocos funcionando com limite 8
+     Preview visual de alcance funcionando com borda branca fina
+
+5.2. Gold Shears
+     Classe própria criada: GoldenShearsItem.java
+     Registro no mod concluído com sucesso
+     Recipe criada e validada
+     Textura, model e lang funcionando
+     Exibição na aba Tools & Utilities validada
+     Tooltip dinâmica funcionando
+     Vein Mining de blocos funcionando com limite 16
+     Preview visual de alcance funcionando com borda branca fina
+
+5.3. Base compartilhada do sistema
+     BaseVeinShearsItem criada para centralizar durabilidade, limite por tier e verificação de Shift
+     VeinMiningHelper criado para localizar blocos conectados reutilizando a mesma lógica para quebra
+      e preview
+     VeinMiningPreviewRenderer criado para destacar visualmente os blocos atingidos antes da ação
+     Tooltips por tier criadas a partir da classe base, evitando duplicação
+6. Como o mod funciona hoje
+Na versão atual, o fluxo de uso para Iron e Gold está assim:
+
+1. O jogador equipa uma das shears customizadas.
+2. Ao mirar em um bloco válido para tesoura, o sistema identifica se ele pertence a um grupo
+   conectável.
+3. Ao segurar Shift, o preview visual exibe com borda branca os blocos adicionais que serão atingidos.
+4. Ao usar a ferramenta com Shift + clique esquerdo, o Vein Mining é ativado.
+5. O mod quebra blocos conectados do mesmo tipo, respeitando o limite daquela tier.
+6. A tooltip da ferramenta mostra o alcance e a instrução de ativação.
+
+Os blocos atualmente contemplados pela lógica validada incluem folhas, lã, teias, vines, glow lichen,
+grass, tall grass, fern, large fern, dead bush, hanging roots e tripwire, ou seja, materiais compatíveis
+com uso de shears.
+
+
+
+7. Arquitetura atual do projeto
+Os principais arquivos e responsabilidades já estabelecidos no projeto são:
+
+ Arquivo / classe                                   Responsabilidade
+                                                    Registro de itens e integração principal do mod;
+ ExampleMod.java
+                                                    ainda mantém nome herdado do template MDK
+                                                    Classe base das shears customizadas; armazena
+ BaseVeinShearsItem.java
+                                                    durabilidade, limite e tooltip
+                                                    Implementação da Iron Shears com 297 de
+ IronShearsItem.java
+                                                    durabilidade e limite 8
+                                                    Implementação da Gold Shears com 357 de
+ GoldenShearsItem.java
+                                                    durabilidade e limite 16
+                                                    Busca de blocos conectados válidos para Vein
+ VeinMiningHelper.java
+                                                    Mining
+                                                    Renderização do preview visual com borda
+ VeinMiningPreviewRenderer.java
+                                                    branca
+ assets/shearupgraded/textures/item                 Texturas dos itens
+ assets/shearupgraded/models/item                   Models dos itens
+ assets/shearupgraded/lang/en_us.json               Nomes e textos das tooltips
+ data/shearupgraded/recipes                         Recipes funcionais do mod
+Ponto importante de manutenção: o projeto ainda carrega nomenclaturas internas herdadas do MDK,
+como o package com.example.examplemod e a classe ExampleMod. Isso não impede o funcionamento
+atual, mas é uma refatoração pendente para deixar a estrutura coerente com a identidade real do mod.
+
+
+
+8. Erros, avisos e problemas encontrados ao longo do desenvolvimento
+Abaixo está o consolidado dos principais problemas enfrentados até o estado atual do projeto, sempre
+acompanhado da correção aplicada. Esta seção serve como histórico técnico e também como
+prevenção para regressões futuras.
+
+ Problema observado                  Causa                               Correção aplicada
+                                     Ambiente com Java 8, Java 21
+ Java e Gradle usando versões                                            Padronização do projeto em
+                                     e Gradle apontando para
+ erradas ou misturadas                                                   Java 17 e ajuste do Gradle JVM
+                                     runtimes diferentes
+ Comandos executados fora da         Terminal aberto em pasta pai,       Execução padronizada na raiz
+                                      impedindo localizar gradlew e         real do projeto forge-1.20.1-
+    pasta real do projeto
+                                      arquivos do mod                       47.4.10-mdk
+    Erro de digitação em comando      Uso de grandlew em vez de             Correção do comando e
+    de build                          gradlew                               validação do fluxo runClient
+                                      shearupgrade e shearupgraded          Alinhamento do modId para
+    Falha de metadata do mod por
+                                      estavam inconsistentes entre          shearupgraded e nova
+    divergência de modId
+                                      código e recursos gerados             validação do carregamento
+                                      Arquivo da recipe foi colocado        Movida para
+    Recipe sem funcionar
+                                      em assets em vez de data              data/shearupgraded/recipes
+    Warning de ResourceLocation       Uso do construtor antigo              Substituição por
+    deprecated                        ResourceLocation(String)              ResourceLocation.parse(...)
+    Warning de EXAMPLE_TAB            Código herdado do MDK não             Mantido como aviso não fatal;
+    never used                        utilizado diretamente                 limpeza adiada para refatoração
+    Erro Cannot resolve symbol        Constante incompatível com o
+                                                                            Troca por Blocks.GRASS
+    SHORT_GRASS                       mapeamento usado na versão
+    Erro Cannot resolve method
+                                      Chamada do renderer com               Ajuste para a assinatura
+    renderLineBox com assinatura
+                                      overload errado                       suportada pelo ambiente atual
+    incorreta
+                                      A lógica de quebra existia, mas
+    Falta de preview visual do Vein                                         Implementação do
+                                      o renderer ainda não tinha sido
+    Mining                                                                  VeinMiningPreviewRenderer
+                                      criado
+
+
+9. Estado atual consolidado do projeto
+No momento desta documentação, o estado real do projeto pode ser resumido assim:
+
+     Projeto compila e abre normalmente no ambiente de desenvolvimento.
+     Repositório local já foi conectado ao GitHub e recebeu push com sucesso.
+     Iron Shears está concluída na versão atual validada.
+     Gold Shears está concluída na versão atual validada.
+     Tooltips por tier já estão funcionando.
+     Preview visual do Vein Mining já está funcionando.
+     Vein Mining de blocos já está funcionando.
+     Vein Mining em entities ainda não foi implementado.
+     Emerald, Diamond e Netherite ainda não foram fechadas na mesma qualidade de validação de Iron
+      e Gold.
+     A refatoração de nomes internos do template ainda está pendente.
+
+
+
+10. O que falta para o fechamento do projeto
+Para o projeto ser considerado fechado em sua proposta completa, ainda é necessário concluir as
+próximas etapas abaixo.
+
+    Frente                            Descrição                             Prioridade
+                                      Finalizar validação completa de
+                                      recipe, textura, model, lang,
+    Emerald Shears                                                          Alta
+                                      tooltip, preview e
+                                      comportamento
+                                      Implementar classe, registro,
+    Diamond Shears                                                          Alta
+                                      recipe, assets, tooltip e limite 64
+                                      Implementar classe, registro,
+    Netherite Shears                                                        Alta
+                                      recipe, assets, tooltip e limite
+                                     128
+                                     Adicionar Vein Mining em
+    Entities                         entidades válidas para shears,     Alta
+                                     conforme escopo desejado
+                                     Validar durabilidade e custo de
+    Balanceamento                    crafting de todas as tiers no      Média
+                                     contexto real de gameplay
+                                     Trocar ExampleMod e package
+    Refatoração de template          com.example.examplemod para        Média
+                                     nomes reais do projeto
+                                     Remover ou substituir código
+    Limpeza técnica                  residual do MDK que não faz        Média
+                                     mais sentido no projeto final
+                                     Atualizar README público e
+                                     instruções de instalação/uso
+    Documentação final                                                  Média
+                                     quando todas as tiers estiverem
+                                     concluídas
+
+
+11. Próximas atualizações sugeridas
+A ordem recomendada para continuidade do desenvolvimento é esta:
+
+     Fechar a Emerald Shears com o mesmo padrão de qualidade de Iron e Gold.
+     Implementar Diamond Shears e Netherite Shears.
+     Adicionar Vein Mining para entities válidas de shears.
+     Revisar e balancear o custo e a durabilidade de cada tier.
+     Refatorar os nomes internos herdados do template MDK.
+     Fazer rodada final de testes, limpeza de warnings e atualização de documentação pública.
+
+Essa ordem mantém o projeto evoluindo sem sacrificar consistência. Primeiro fecha-se a linha de tiers
+já definida; depois amplia-se o escopo para entities; por fim, realiza-se a limpeza estrutural do template
+e a preparação final para release.
+
+
+
+12. Benefícios práticos do mod para o jogador
+     Economia de tempo em tarefas repetitivas com tesoura.
+     Melhor experiência para builders e decoradores.
+     Melhor manutenção de áreas com vegetação e materiais orgânicos.
+     Feedback visual antes da ação, reduzindo erro humano.
+     Escalonamento de poder claro por tier.
+     Base para evolução futura com entities e possivelmente outros efeitos.
+
+
+
+13. Conclusão
+Shear Upgraded já deixou de ser apenas uma ideia e passou a existir como mod funcional com base
+técnica sólida. Na etapa atual, o projeto já validou com sucesso Iron Shears e Gold Shears, incluindo
+durabilidade customizada, recipes, texturas, models, tooltips e Vein Mining com preview visual.
+
+Os próximos passos são claros: concluir Emerald, Diamond e Netherite no mesmo padrão, implementar
+suporte a entities e finalizar a limpeza estrutural do projeto herdado do template MDK. Com isso, o mod
+poderá ser considerado fechado, coerente e pronto para evolução futura.
+
