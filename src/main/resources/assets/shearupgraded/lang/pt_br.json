@@ -5,7 +5,7 @@
   "item.shearupgraded.diamond_shears": "Tesoura de Diamante",
   "item.shearupgraded.netherite_shears": "Tesoura de Netherita",
   "tooltip.shearupgraded.vein_mining_range": "Vein Mining: %s blocos",
-  "tooltip.shearupgraded.vein_mining_targets": "Encadeia blocos compatíveis e mobs tosquiáveis próximos",
+  "tooltip.shearupgraded.vein_mining_targets": "Quebra blocos compatíveis e mobs tosquiáveis próximos",
   "tooltip.shearupgraded.hold_shift": "Segure Shift para mais detalhes",
   "tooltip.shearupgraded.vein_mining_activation": "Use Shift ao quebrar blocos ou tosquiar mobs"
 }
