@@ -1,10 +1,7 @@
 package com.example.examplemod.item;
 
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ShearsItem;
-
-public class IronShearsItem extends ShearsItem {
+public class IronShearsItem extends BaseVeinShearsItem {
     public IronShearsItem() {
-        super(new Item.Properties().durability(297));
+        super(297, 8);
     }
 }
