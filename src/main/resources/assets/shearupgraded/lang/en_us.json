@@ -5,6 +5,7 @@
   "item.shearupgraded.diamond_shears": "Diamond Shears",
   "item.shearupgraded.netherite_shears": "Netherite Shears",
   "tooltip.shearupgraded.vein_mining_range": "Vein Mining: %s blocks",
+  "tooltip.shearupgraded.vein_mining_targets": "Chains nearby matching blocks and shearable mobs",
   "tooltip.shearupgraded.hold_shift": "Hold Shift for more details",
-  "tooltip.shearupgraded.vein_mining_activation": "Use Shift + Left Click to activate Vein Mining"
+  "tooltip.shearupgraded.vein_mining_activation": "Use Shift while mining blocks or shearing mobs"
 }

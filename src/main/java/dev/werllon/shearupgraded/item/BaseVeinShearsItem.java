@@ -1,5 +1,6 @@
 package dev.werllon.shearupgraded.item;
 
+import dev.werllon.shearupgraded.util.EntityVeinMiningHelper;
 import dev.werllon.shearupgraded.util.VeinMiningHelper;
 import java.util.List;
 import java.util.Set;
@@ -8,6 +9,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -40,6 +43,8 @@ public class BaseVeinShearsItem extends ShearsItem {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.shearupgraded.vein_mining_range", veinLimit)
                 .withStyle(ChatFormatting.AQUA));
+        tooltip.add(Component.translatable("tooltip.shearupgraded.vein_mining_targets")
+                .withStyle(ChatFormatting.GREEN));
 
         if (Screen.hasShiftDown()) {
             tooltip.add(Component.translatable("tooltip.shearupgraded.vein_mining_activation")
@@ -77,5 +82,26 @@ public class BaseVeinShearsItem extends ShearsItem {
         }
 
         return result;
+    }
+
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity entity, InteractionHand hand) {
+        if (!(player instanceof ServerPlayer serverPlayer) || !isVeinMiningActive(player)) {
+            return super.interactLivingEntity(stack, player, entity, hand);
+        }
+        if (stack.getOrCreateTag().getBoolean(VEIN_MINING_TAG)) {
+            return InteractionResult.PASS;
+        }
+        if (!EntityVeinMiningHelper.canVeinMineEntity(entity, stack)) {
+            return super.interactLivingEntity(stack, player, entity, hand);
+        }
+
+        stack.getOrCreateTag().putBoolean(VEIN_MINING_TAG, true);
+        try {
+            int shearedCount = EntityVeinMiningHelper.shearConnectedEntities(serverPlayer, hand, stack, entity, veinLimit);
+            return shearedCount > 0 ? InteractionResult.sidedSuccess(false) : InteractionResult.PASS;
+        } finally {
+            stack.getOrCreateTag().remove(VEIN_MINING_TAG);
+        }
     }
 }
